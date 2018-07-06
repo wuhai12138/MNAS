@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JCustomerPrepaidMapper">
+
+    <select id="getCustomerPrepaidList" parameterType="com.summ.mnas.model.request.CustomerPrepaidReq"
+            resultType="com.summ.mnas.model.response.CustomerPrepaidRes">
+        SELECT j.*,jgc.service AS goodsName,jc.customerPhone,jc.customerName,jdi.INFO AS prepaidStatusInfo
+        FROM j_customer_prepaid j
+        LEFT JOIN j_dict_info jdi ON jdi.ID=j.prepaidStatus
+        LEFT JOIN j_customer jc ON jc.customerId=j.customerId
+        LEFT JOIN j_goods_contract jgc ON jgc.goodsId=j.goodsId
+        WHERE j.isDel=16
+        AND j.customerId=#{customerPrepaidReq.customerId}
+        <if test="0!=customerPrepaidReq.prepaidStatus">
+            AND j.prepaidStatus=#{customerPrepaidReq.prepaidStatus}
+        </if>
+        limit #{customerPrepaidReq.page},#{customerPrepaidReq.size}
+    </select>
+</mapper>

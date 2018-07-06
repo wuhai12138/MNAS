@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JOrderScheduleMapper">
+
+
+
+    <select id="getOrderSchedule" parameterType="com.summ.mnas.model.request.ScheduleReq"
+            resultType="com.summ.mnas.model.response.ScheduleRes">
+        SELECT j.*,jgc.price,jgc.unitName,jgc.service as goodsName,jdi1.INFO AS scheduleStatusInfo,js.shopName,jc.customerName,jni.nannyId,jni.nannyName,jni.nannyPhone,jch.houseAddress,jdi.info as commentStatusInfo,jsn.*
+        FROM j_order_schedule j
+        LEFT JOIN j_goods_contract jgc ON j.goodsId=jgc.goodsId
+        left join j_customer_house jch on jch.houseId=j.houseId
+        LEFT JOIN j_dict_info jdi1 ON jdi1.ID=j.scheduleStatus
+        left join j_customer jc on jc.customerId=j.customerId
+        left join j_shop js on js.shopId=j.shopId
+        left join j_schedule_nanny jsn on jsn.scheduleId=j.scheduleId
+        left join j_dict_info jdi on jdi.ID=jsn.commentStatus
+        left join j_nanny_info jni on jni.nannyId=jsn.nannyId
+        WHERE j.customerId=#{scheduleReq.customerId}
+        <if test="0!=scheduleReq.scheduleStatus">
+            and j.scheduleStatus=#{scheduleReq.scheduleStatus}
+        </if>
+        AND j.scheduleDate BETWEEN #{scheduleReq.startDate} AND #{scheduleReq.endDate}
+        order by j.scheduleDate desc
+        limit #{scheduleReq.page},#{scheduleReq.size}
+    </select>
+</mapper>

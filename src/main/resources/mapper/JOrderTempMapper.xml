@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JOrderTempMapper">
+
+    <select id="getTempDetail" resultType="com.summ.mnas.model.response.OrderRes" parameterType="com.summ.mnas.model.request.OrderReq">
+        select j.orderId,j.remark,j.customerId,j.orderStatus,j.orderCloseStatus,j.goodsId,j.orderDate,jgc.service,jgc.unitName,jgc.lowest,jch.houseAddress,
+        jdi.INFO as orderStatusInfo,jdi1.INFO as orderCloseStatusInfo,164 as orderType,j.shopId,j.startTimeValue,j.endTimeValue,
+        j.totalPrice,j.payStatus,jdi2.INFO as payStatusInfo,j.serviceAmount,j.createTime,j.discount
+        from j_order_temp j
+        left join j_goods_contract jgc on jgc.goodsId=j.goodsId
+        left join j_customer_house jch on j.houseId=jch.houseId
+        left join j_dict_info jdi on jdi.id=j.orderStatus
+        left join j_dict_info jdi1 on jdi1.id=j.orderCloseStatus
+        left join j_dict_info jdi2 on jdi2.id=j.payStatus
+        where j.customerId=#{orderReq.customerId}
+        and j.isDel=16
+        and j.orderCloseStatus=212
+        order by j.orderId desc
+        limit #{orderReq.page},#{orderReq.size}
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JScheduleChangeApplyMapper">
+
+    <select id="getChangeByCustomer" resultType="com.summ.mnas.model.response.ScheduleChangeApplyRes">
+        select j.*,jdi1.INFO as applyStatusInfo,jdi2.INFO as applyTypeInfo
+        from j_schedule_change_apply j
+        left join j_dict_info jdi1 on jdi1.ID=j.applyStatus
+        left join j_dict_info jdi2 on jdi2.ID=j.applyType
+        where j.isDel=16
+        and j.customerID=#{0}
+    </select>
+    <select id="getScheduleChangeApply" resultType="com.summ.mnas.model.response.ScheduleChangeApplyRes">
+        select j.*
+        from j_schedule_change_apply j
+        where j.isDel=16
+        and j.customerID=#{customerId}
+        and j.createDate between #{startDate} and #{endDate}
+    </select>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.nanny.mapper.JNannyInfoMapper">
+
+    <select id="getNannyInfoById" resultType="com.summ.mnas.model.response.NannyInfoRes">
+        SELECT
+	j.*,
+	GROUP_CONCAT(jdi1.INFO) AS "joblevel",
+	(
+		SELECT
+			GROUP_CONCAT(js.shopName)
+		FROM
+			j_nanny_info j
+		LEFT JOIN j_nanny_shop jns ON j.nannyId = jns.nannyId
+		LEFT JOIN j_shop js ON js.shopId = jns.shopId
+		WHERE
+			j.nannyId =#{0}
+	) AS shopName
+FROM
+	j_nanny_info j
+LEFT JOIN j_nanny_job_level jnjl ON j.nannyId = jnjl.nannyId
+LEFT JOIN j_dict_info jdi1 ON jdi1.ID = jnjl.jobLevelId
+WHERE
+	j.nannyId =#{0}
+	and j.isDel=16
+    </select>
+
+	<select id="getNannyList" parameterType="com.summ.mnas.model.request.NannyReq"
+			resultType="com.summ.mnas.model.response.NannyInfoRes">
+		select j.*
+		from j_nanny_info j
+		left join j_nanny_job_level jnjl on jnjl.nannyId=j.nannyId
+		left join j_nanny_job_level_goods jnjlg on jnjlg.jobLevelId=jnjl.jobLevelId
+		left join j_nanny_skill jns on jns.nannyId=j.nannyId
+		where j.isDel=16
+		and jnjlg.goodsId=#{nannyReq.goodsId}
+		and jns.skillId in
+		<foreach collection="nannyReq.skillIdList" index="index" item="item" open="("
+				 separator="," close=")">
+			#{item}
+		</foreach>
+		and j.nannyAge between #{nannyReq.startAge} and #{nannyReq.endAge}
+		and j.nannyExperence between #{nannyReq.startExperence} and #{nannyReq.endExperence}
+		limit #{nannyReq.page},#{nannyReq.size}
+	</select>
+
+	<select id="getNannyListCount" parameterType="com.summ.mnas.model.request.NannyReq"
+			resultType="java.lang.Integer">
+		select count(j.nannyId)
+		from j_nanny_info j
+		left join j_nanny_job_level jnjl on jnjl.nannyId=j.nannyId
+		left join j_nanny_job_level_goods jnjlg on jnjlg.jobLevelId=jnjl.jobLevelId
+		left join j_nanny_skill jns on jns.nannyId=j.nannyId
+		where j.isDel=16
+		and jnjlg.goodsId=#{nannyReq.goodsId}
+		and jns.skillId in
+		<foreach collection="nannyReq.skillIdList" index="index" item="item" open="("
+				 separator="," close=")">
+			#{item}
+		</foreach>
+		and j.nannyAge between #{nannyReq.startAge} and #{nannyReq.endAge}
+		and j.nannyExperence between #{nannyReq.startExperence} and #{nannyReq.endExperence}
+	</select>
+
+</mapper>

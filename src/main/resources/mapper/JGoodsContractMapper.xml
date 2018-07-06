@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JGoodsContractMapper">
+
+    <select id="getGoodsList" resultType="com.summ.mnas.model.JGoodsContract">
+        select j.*
+        from j_goods_contract j
+        left join j_goods_shop jgs on j.goodsId=jgs.goodsId
+        where j.goodsType=#{goodsType}
+        and j.isDel=16
+        <if test="0!=shopId">
+            and jgs.shopId=#{shopId}
+        </if>
+        group by j.goodsId
+    </select>
+</mapper>

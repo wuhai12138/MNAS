@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JCustomerHouseMapper">
+
+    <select id="getHouseByCustomerId" resultType="com.summ.mnas.model.JCustomerHouse">
+        select j.*,js.shopName,jc.cityName
+        from j_customer_house j
+        left join j_shop js on js.shopId = j.shopId
+        left join j_city jc on jc.cityId=j.cityId
+        where j.customerId=#{0}
+        and j.isDel=16
+    </select>
+
+</mapper>

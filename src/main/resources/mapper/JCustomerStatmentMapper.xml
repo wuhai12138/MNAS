@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summ.mnas.mapper.JCustomerStatmentMapper">
+
+    <select id="getStatmentList" parameterType="com.summ.mnas.model.request.CustomerStatmentReq"
+            resultType="com.summ.mnas.model.response.CustomerStatmentRes">
+        SELECT a.*,d2.INFO AS statmentCustomerTypeInfo,d3.INFO AS chargeWayInfo,d4.INFO AS
+        terminalInfo,d5.INFO AS statusInfo,d6.customerName AS customerName,d6.customerPhone,
+        d7.adminName AS adminName,jch.houseAddress,jc.couponName,jc.couponPrice,jgc.service AS goodsName,jni.nannyName
+        FROM j_customer_statment a
+        LEFT JOIN j_dict_info d2 ON d2.ID = a.statmentCustomerType
+        LEFT JOIN j_dict_info d3 ON d3.ID = a.chargeWay
+        LEFT JOIN j_dict_info d4 ON d4.ID = a.terminal
+        LEFT JOIN j_dict_info d5 ON d5.ID = a.status
+        LEFT JOIN j_customer d6 ON d6.customerId = a.customerId
+        LEFT JOIN j_admin d7 ON d7.adminId = a.adminId
+        LEFT JOIN j_customer_house jch ON jch.houseId=a.houseId
+        LEFT JOIN j_coupon_list jcl ON jcl.couponListId=a.couponListId
+        LEFT JOIN j_coupon jc ON jc.couponId=jcl.couponId
+        LEFT JOIN j_goods_contract jgc ON jgc.goodsId=a.goodsId
+        left join j_schedule_nanny jsn on jsn.scheduleId=a.scheduleId
+        left join j_nanny_info jni on jni.nannyId=jsn.nannyId
+        WHERE a.customerId = #{customerStatmentReq.customerId}
+        and a.isDel=16
+        <if test="0 != customerStatmentReq.statmentCustomerType">
+            AND a.statmentCustomerType = #{customerStatmentReq.statmentCustomerType}
+        </if>
+        AND a.status = 53
+        AND a.chargeDate BETWEEN #{customerStatmentReq.startDate} AND #{customerStatmentReq.endDate}
+        ORDER BY a.chargeDate desc
+        LIMIT #{customerStatmentReq.page},#{customerStatmentReq.size}
+    </select>
+
+    <select id="getNannyName" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(jni.nannyName)
+FROM j_order_schedule j
+LEFT JOIN j_schedule_nanny jsn on jsn.scheduleId=j.scheduleId
+LEFT JOIN j_nanny_info jni on jni.nannyId=jsn.nannyId
+WHERE j.orderType=164
+and j.orderId=#{0}
+    </select>
+
+</mapper>
